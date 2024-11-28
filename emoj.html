@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Click Effect</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            position: relative;
+        }
+        .emoji {
+            position: absolute;
+            font-size: 2em;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<script>
+    const emojis = ['😊', '😂', '😍', '😎', '🥳', '🤩', '🚀', '🎉'];
+    const gravity = 0.5;
+    const friction = 0.97;
+    const bounceFactor = -0.7;
+
+    document.addEventListener('click', (event) => {
+        const count = Math.floor(Math.random() * 10) + 5;
+        for (let i = 0; i < count; i++) {
+            createEmoji(event.clientX, event.clientY);
+        }
+    });
+
+    function createEmoji(x, y) {
+        const emojiElement = document.createElement('div');
+        emojiElement.className = 'emoji';
+        emojiElement.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        document.body.appendChild(emojiElement);
+
+        let velocityX = (Math.random() - 0.5) * 10;
+        let velocityY = (Math.random() - 0.5) * 10 - 5;
+        let posX = x;
+        let posY = y;
+
+        function animate() {
+            velocityY += gravity;
+            velocityX *= friction;
+            velocityY *= friction;
+
+            posX += velocityX;
+            posY += velocityY;
+
+            if (posY + emojiElement.offsetHeight > window.innerHeight) {
+                posY = window.innerHeight - emojiElement.offsetHeight;
+                velocityY *= bounceFactor;
+            }
+
+            if (posX + emojiElement.offsetWidth > window.innerWidth || posX < 0) {
+                velocityX *= bounceFactor;
+                if (posX < 0) posX = 0;
+                if (posX + emojiElement.offsetWidth > window.innerWidth) posX = window.innerWidth - emojiElement.offsetWidth;
+            }
+
+            emojiElement.style.left = posX + 'px';
+            emojiElement.style.top = posY + 'px';
+
+            if (Math.abs(velocityY) < 0.1 && Math.abs(velocityX) < 0.1 && posY >= window.innerHeight - emojiElement.offsetHeight) {
+                emojiElement.remove();
+            } else {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        animate();
+    }
+</script>
+</body>
+</html>
